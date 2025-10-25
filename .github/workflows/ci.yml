@@ -11,12 +11,14 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        otp-version: ["26.0.2"]
-        gleam-version: ["1.12", "1.13"]
-        rebar3-version: ["3"]
+        otp: ["26.0"]
+        gleam: ["1.12", "1.13"]
     steps:
       - uses: actions/checkout@v3
       - uses: erlef/setup-beam@v1
+        with:
+          otp-version: ${{matrix.otp}}
+          gleam-version: ${{matrix.gleam}}
       - run: gleam deps download
       - run: gleam build --warnings-as-errors
       - run: gleam test
