@@ -16,7 +16,7 @@ pub type ClientAuth =
 /// for each realm.
 /// 
 /// The realm value should be considered an opaque string which can 
-/// only be compared for equality with other realms on that server
+/// only be compared for equality with other realms on that server.
 /// 
 /// Example header: `Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==`
 /// 
