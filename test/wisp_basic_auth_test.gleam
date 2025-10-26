@@ -41,6 +41,32 @@ pub fn with_authorized_header_and_known_id_test() {
     )
 }
 
+pub fn with_incorrect_password_test() {
+  let req = request_with_auth()
+  let known_clients = [#("Aladdin", "pass1234")]
+
+  let assert Response(403, [], wisp.Text("Forbidden")) =
+    wisp_basic_auth.validate_basic_auth(
+      req,
+      realm,
+      known_clients,
+      success_handler,
+    )
+}
+
+pub fn with_incorrect_user_test() {
+  let req = request_with_auth()
+  let known_clients = [#("Jaffar", "open sesame")]
+
+  let assert Response(403, [], wisp.Text("Forbidden")) =
+    wisp_basic_auth.validate_basic_auth(
+      req,
+      realm,
+      known_clients,
+      success_handler,
+    )
+}
+
 fn success_handler(_request) {
   wisp.response(204)
 }
