@@ -1,6 +1,7 @@
 import gleam/bit_array
 import gleam/http/request
 import gleam/list
+import gleam/string
 
 import wisp
 
@@ -20,6 +21,14 @@ pub type ClientAuth =
 /// 
 /// Example header: `Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==`
 /// 
+/// Using `curl` to set the header:
+/// 
+/// ```bash
+/// curl -X POST -u "client:password" ... https://example.com
+/// ```
+/// 
+/// Set the middleware in your router:
+/// 
 /// ```gleam
 /// use request <- validate_basic_auth("Agrabah", [#("Aladdin", "open sesame")])
 /// ```
@@ -38,6 +47,26 @@ pub fn validate_basic_auth(
       }
     }
   }
+}
+
+/// Parse a list of credentials in the format `client:password`
+/// separated by semi-colons.
+/// 
+/// ```
+/// parse_credentials("a:A;b:B")
+/// // -> [#("a", "A"), #("b", "B")]
+/// ```
+pub fn parse_credentials(credentials: String) -> List(ClientAuth) {
+  let split_credential = fn(credential) {
+    case string.split_once(credential, on: ":") {
+      Ok(credential) -> [credential]
+      Error(_) -> []
+    }
+  }
+
+  credentials
+  |> string.split(on: ";")
+  |> list.flat_map(split_credential)
 }
 
 fn check_authorization(

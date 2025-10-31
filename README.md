@@ -1,6 +1,6 @@
 # wisp_basic_auth
 
-[Wisp][wisp] middleware of the [Basic Authentication Scheme][basicaa].
+[Wisp][wisp] middleware of the HTTP [Basic Authentication Scheme][basicaa].
 
 > The basic authentication scheme is a non-secure method of filtering unauthorized access to resources on an HTTP server. It is based on the assumption that the connection between the client and the server can be regarded as a trusted carrier. As this is not generally true on an open network, the basic authentication scheme should be used accordingly.
 

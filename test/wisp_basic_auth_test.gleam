@@ -67,6 +67,24 @@ pub fn with_incorrect_user_test() {
     )
 }
 
+pub fn parse_credentials_empty_test() {
+  assert [] == wisp_basic_auth.parse_credentials("")
+}
+
+pub fn parse_credentials_one_test() {
+  assert [#("a", "A")] == wisp_basic_auth.parse_credentials("a:A")
+}
+
+pub fn parse_credentials_many_test() {
+  assert [#("a", "A"), #("b", "B")]
+    == wisp_basic_auth.parse_credentials("a:A;b:B")
+}
+
+pub fn parse_credentials_robust_test() {
+  assert [#("a", "A"), #("b", "B"), #("d", "D")]
+    == wisp_basic_auth.parse_credentials("a:A;b:B;c;d:D")
+}
+
 fn success_handler(_request) {
   wisp.response(204)
 }
