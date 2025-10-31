@@ -12,7 +12,7 @@ jobs:
     strategy:
       matrix:
         gleam: ["1.12", "1.13"]
-        otp: ["26.0"]
+        otp: ["28.1"]
         rebar3: ["3.25"]
     steps:
       - uses: actions/checkout@v3
