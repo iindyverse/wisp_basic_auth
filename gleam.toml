@@ -1,5 +1,5 @@
 name = "wisp_basic_auth"
-version = "1.0.304"
+version = "1.1.0"
 
 description = "Basic HTTP Authentication Scheme for Wisp"
 licences = ["Apache-2.0"]

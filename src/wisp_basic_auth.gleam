@@ -30,20 +30,24 @@ pub type ClientAuth =
 /// Set the middleware in your router:
 /// 
 /// ```gleam
-/// use request <- validate_basic_auth("Agrabah", [#("Aladdin", "open sesame")])
+/// let validate_basic_auth = wisp_basic_auth.validate_basic_auth(realm, known_clients)
+/// use _ <- validate_basic_auth(request)
 /// ```
+/// 
 pub fn validate_basic_auth(
-  request: wisp.Request,
   realm: String,
   known_clients: List(ClientAuth),
-  handler: fn(wisp.Request) -> wisp.Response,
-) -> wisp.Response {
-  case request.get_header(request, "Authorization") {
-    Error(_) -> unauthorized_response(realm)
-    Ok(auth_header) -> {
-      case check_authorization(auth_header, known_clients) {
-        Ok(_) -> handler(request)
-        Error(Nil) -> forbidden_response()
+) -> fn(wisp.Request, fn(wisp.Request) -> wisp.Response) -> wisp.Response {
+  let authorized_clients = precalculate_credentials(known_clients)
+
+  fn(request, handler) {
+    case request.get_header(request, "Authorization") {
+      Error(_) -> unauthorized_response(realm)
+      Ok(auth_header) -> {
+        case list.contains(authorized_clients, auth_header) {
+          True -> handler(request)
+          False -> forbidden_response()
+        }
       }
     }
   }
@@ -69,18 +73,10 @@ pub fn parse_credentials(credentials: String) -> List(ClientAuth) {
   |> list.flat_map(split_credential)
 }
 
-fn check_authorization(
-  authorization_header: String,
-  authorized: List(ClientAuth),
-) {
-  let match = fn(auth) {
-    let #(id, password) = auth
-    case encode_creds(id, password) == authorization_header {
-      True -> Ok(id)
-      False -> Error(Nil)
-    }
-  }
-  list.find_map(authorized, match)
+fn precalculate_credentials(known_clients) {
+  list.map(known_clients, fn(id_secret: ClientAuth) {
+    encode_creds(id_secret.0, id_secret.1)
+  })
 }
 
 fn encode_creds(id, secret) -> String {

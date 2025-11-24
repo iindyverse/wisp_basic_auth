@@ -13,58 +13,47 @@ pub fn main() -> Nil {
 }
 
 pub fn without_authorized_header_returns_401_test() {
+  let middleware = wisp_basic_auth.validate_basic_auth(realm, [])
   let req = simulate.request(http.Get, "")
   let assert Response(401, headers, wisp.Text("Unauthorized")) =
-    wisp_basic_auth.validate_basic_auth(req, realm, [], success_handler)
+    middleware(req, success_handler)
 
   assert Ok("Basic realm=\"" <> realm <> "\"")
     == list.key_find(headers, "www-authenticate")
 }
 
 pub fn with_authorized_header_returns_403_test() {
+  let middleware = wisp_basic_auth.validate_basic_auth(realm, [])
   let req = request_with_auth()
 
   let assert Response(403, [], wisp.Text("Forbidden")) =
-    wisp_basic_auth.validate_basic_auth(req, realm, [], success_handler)
+    middleware(req, success_handler)
 }
 
 pub fn with_authorized_header_and_known_id_test() {
   let req = request_with_auth()
   let known_clients = [#("Aladdin", "open sesame")]
+  let middleware = wisp_basic_auth.validate_basic_auth(realm, known_clients)
 
-  let assert Response(204, [], wisp.Text("")) =
-    wisp_basic_auth.validate_basic_auth(
-      req,
-      realm,
-      known_clients,
-      success_handler,
-    )
+  let assert Response(204, [], wisp.Text("")) = middleware(req, success_handler)
 }
 
 pub fn with_incorrect_password_test() {
   let req = request_with_auth()
   let known_clients = [#("Aladdin", "pass1234")]
+  let middleware = wisp_basic_auth.validate_basic_auth(realm, known_clients)
 
   let assert Response(403, [], wisp.Text("Forbidden")) =
-    wisp_basic_auth.validate_basic_auth(
-      req,
-      realm,
-      known_clients,
-      success_handler,
-    )
+    middleware(req, success_handler)
 }
 
 pub fn with_incorrect_user_test() {
   let req = request_with_auth()
   let known_clients = [#("Jaffar", "open sesame")]
+  let middleware = wisp_basic_auth.validate_basic_auth(realm, known_clients)
 
   let assert Response(403, [], wisp.Text("Forbidden")) =
-    wisp_basic_auth.validate_basic_auth(
-      req,
-      realm,
-      known_clients,
-      success_handler,
-    )
+    middleware(req, success_handler)
 }
 
 pub fn parse_credentials_empty_test() {
