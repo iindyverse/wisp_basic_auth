@@ -28,12 +28,14 @@ const realm = "Secure"
 const known_clients = [#("Aladdin", "open sesame")]
 
 pub fn handle_request(request: Request) -> Response {
+  let validate_basic_auth = validate_basic_auth(realm, known_clients)
   use request <- validate_basic_auth(realm, known_clients)
   wisp.ok()
 }
 ```
 
-Further documentation can be found at <https://hexdocs.pm/wisp_basic_auth>.
+Note due to the use of a closure and the requirements of the [Gleam use][use]
+expression two steps are needed to add the middleware.
 
 ## Development
 
@@ -44,4 +46,5 @@ gleam test
 [basicaa]: https://www.w3.org/Protocols/HTTP/1.0/spec.html#BasicAA
 [oa]: https://en.wikipedia.org/wiki/OAuth
 [ta]: https://en.wikipedia.org/wiki/Timing_attack
+[use]: https://tour.gleam.run/advanced-features/use/
 [wisp]: https://hex.pm/packages/wisp
