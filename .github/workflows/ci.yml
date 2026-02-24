@@ -10,8 +10,9 @@ jobs:
   test:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
-        gleam: ["1.12", "1.13"]
+        gleam: ["1.12", "1.13", "1.14"]
         otp: ["28.1"]
         rebar3: ["3.25"]
     steps:
